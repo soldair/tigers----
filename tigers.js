@@ -11,6 +11,11 @@ http://www.flickr.com/services/api/misc.urls.html
 var tigers = {
 	key:null,
 	popTime:1000,
+	photos:[],
+	activeTigers:0,
+	soundWorks:0,
+	soundEnabled:1,
+	frozen:0,
 	init:function(){
 		if(window.FLICKER_KEY){
 			this.key = window.FLICKER_KEY;
@@ -27,15 +32,13 @@ var tigers = {
 			z.photos = [];
 			$.each(response.photos.photo,function(k,photo){
 				$("<img/>").bind('load',function(){
-					console.log('loaded!');
 					z.photos.push(this);
-				}).attr('src',z.photoToURL(photo)).css({display:'none'});
+				}).attr('src',z.photoToURL(photo)).css({display:'none'}).addClass('tiger');
 			});
 		});
 		
 		z.tigerPoll();
 	},
-	photos:[],
 	get:function(cb){
 		this.apiPhotoSearch('tiger,cat',this.photoTypes.photos_only,cb);
 	},
@@ -44,7 +47,7 @@ var tigers = {
 		var z = this;
 		var interval;
 		interval = setInterval(function(){
-			if(z.photos.length){
+			if(z.photos.length && !z.frozen){
 				var now = z.now();
 				if(now-lastTiger > z.popTime){
 					lastTiger = now;
@@ -52,7 +55,6 @@ var tigers = {
 
 					var position = z.randomCoordinate(tiger.width,tiger.height);
 					$(tiger).css({position:'absolute',top:position.y+'px',left:position.x+'px'}).appendTo("body").fadeIn('fast');
-					console.log('adding tiger!',tiger);
 				}
 			}
 		},500);
@@ -64,6 +66,9 @@ var tigers = {
 		ret.y = (rand%($(window).height()-pad_y))+$(window).scrollTop();
 		
 		return ret;
+	},
+	tigerSlayable:function(){
+	
 	},
 	now:function(){
 		return (new Date().getTime());
@@ -87,6 +92,18 @@ var tigers = {
 	},
 	photoToURL:function(photo){
 		return "http://farm"+photo.farm+".static.flickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg";
+	},
+	activateTigerSounds:function(){
+		if(sounds.length){
+
+			
+		}
+	},
+	sounds:[],
+	playSound:function(){
+		if(this.soundWorks && this.soundEnabled && this.sounds.length){
+			var key = (+(Math.rand()+'').substr(0,4,4))%(sounds.length-1);
+		}
 	}
 }
 

@@ -1,9 +1,6 @@
 <?
-$flickr_key = "70442bef719c380723ebb906dbb70644";
-$flickr_secret = "57355073b33bfd46";
 
 //check for minified tigers
-
 
 ?>
 <!DOCTYPE html>
