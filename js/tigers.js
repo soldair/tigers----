@@ -112,7 +112,7 @@ window.tigers = {
 				if(now-lastTiger > z.popTime){
 					z.activeTigers++;
 					if(z.totalTigers%10 == 0){
-						z.popTime -=40;//FASTER!!!
+						z.popTime -=35;//FASTER!!!
 					}
 					lastTiger = now;
 					var tiger = z.photos.shift();
@@ -121,7 +121,7 @@ window.tigers = {
 					$(tiger).css({position:'absolute',top:position.y+'px',left:position.x+'px',zIndex:5000}).appendTo("body").fadeIn('fast');
 				}
 			}
-		},300);
+		},400);
 	},
 	randomCoordinate:function(pad_x,pad_y){
 		var rand = (+(Math.random()+"").substr(4));
@@ -285,13 +285,19 @@ window.tigers = {
 			var h = $(window).height();
 			var w = $(window).width();
 			var loading = $("<div>").addClass('tiger-loading').text("LOADING TIGERS!").css({
-				border:'3px solid #d4d4d4',
 				"font-size":'30px',
 				color:'#d4d4d4',
 				"font-weight":'bold',
 				padding:'5px',
 				position:'fixed',
-				zIndex:5010
+				zIndex:5010,
+				background:'#fff',
+				border:'3px solid #d4d4d4',
+				"border-radius":'5px',
+				"-moz-border-radius":'5px',
+				"-webkit-border-radius":'5px',
+				"-khtml-border-radius":'5px',
+				"-o-border-radius":'5px'
 			}).appendTo("body");
 			var l_w = loading.width();
 			var l_h = loading.height();
