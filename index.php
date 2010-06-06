@@ -1,7 +1,9 @@
-<?
+<?php
+require 'lib/enableGZIP.php';
+require 'lib/getJSFile.php';
 
-//check for minified tigers
-
+$code = getJSFile('js/tigercage.js',true);
+$bookmarklet = 'javascript:'.rawurlencode(trim($code)).";void(0)";
 ?>
 <!DOCTYPE html>
 <html>
@@ -9,8 +11,7 @@
 	<title>TIGERS!!!!!!!!!!!</title>
 </head>
 <body>
-	TIGERS!!!!!!!!!!!
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-	<script src="tigers.js"></script>
+	TIGERS!!!!!!!!!!!<br/>
+	<a href="<?php echo $bookmarklet?>">Play Tigers Now!</a>
 </body>
 </html>

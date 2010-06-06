@@ -1,53 +1,64 @@
 <?php
 /*
-this php script compiles the latest tigers application on demand!
+this php script is a proxy loader for the tigers application js files
+
+1. creates global tigers config
+
+2. provides requireScript function
+
+3. requires jquery if necessary and requires tigers app
+
 */
 header('Content-type: text/javascript');
+header('Expires: '.gmdate('D, d M Y H:i:s', 0) . ' GMT');//ALWAYS NOT CACHED
+require('lib/enableGZIP.php');
+require('lib/getJSFile.php');
 
-$js_file = 'js/tigers.js';
+enableGZIP();
 
-if(isset($_GET['min']) && $_GET['min'] && is_writeable('./tmp')){
-	$jsmin = false;
-	if(!file_exists('tmp/jsmin')){
-		$gcc = trim(`which gcc`);
-		if($gcc){
-			`$gcc jsmin.c -o tmp/jsmin`;
-			if(is_executable("tmp/jsmin")){
-				$jsmin = "./tmp/jsmin";
-			}
-		}
-		if(!$jsmin){
-			touch('tmp/jsmin');//touch the tmp/jsmin fail so we dont keep trying to compile it
-		}
-	} else if(is_executable('tmp/jsmin')){
-		$jsmin = "./tmp/jsmin"
-	} else if(is_executable('jsmin')){
-		$jsmin = "./jsmin";//use the prepacked version - 64bit linux
-	}
+$files = scandir('./sounds/');
+$sound_exts = array('wav','mp3','ogg');
 
-	if($jsmin){
-		$min_file = './tmp/tigers.min.js';
-		$modified = 0;
-		if(file_exists($min_file)){
-			$modified = filemtime($min_file);
-		}
+$sounds = array();
 
-		$fail = 0;
-		if(filemtime($js_file) > $modified){
-			$fail = 1;
-			$min = trim(`cat $js_file | ./tmp/jsmin`);
-			if($min){
-				$fail = 0;
-				file_put_contents($min_file,$min);
-			}
-		}
-		
-		if(!$fail){
-			$js_file = $min_file;
-		}
+foreach($files as $s){
+	$parts = array_pad(explode('.',basename($s),2),2,'');
+	$ext = $parts[1];
+	$sound = $parts[0];
+	if(in_array($ext,$sound_exts)){
+		if(!isset($sounds[$ext])) $sounds[$ext] = array();
+		$sounds[$ext] = $sound;
 	}
 }
 
-echo file_get_contents($js_file);
+//ensure uptodate tigers minified
+getJSFile('js/tigers.js',true);
 
 ?>
+(function(){
+	<?php
+	//inject dependency loader script
+	echo getJSFile('js/requireScript.js',true);
+	?>
+	if(window.tiger_game_loaded) return;
+
+	window.tiger_config={};
+	tiger_config.sounds = <?php echo json_encode($sounds)?>;
+	tiger_config.serverURL="http://<?php echo $_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])?>";
+	tiger_config.soundServer='tigersounds.php';
+
+	var jqsrc = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js";
+	if(window.jQuery){
+		if(/^1.4/g.test(jQuery.fn.jquery)){//jQuery is 1.4
+			requireScript(tiger_config.serverURL+"/tmp/js_tigers.min.js");
+			return;
+		}
+	}
+
+	//no jQuery 1.4 loaded in current document. load it! but dont conflict!
+	requireScript(jqsrc,function(){
+		window.jQuery14 = jQuery;
+		jQuery.noConflict();
+		requireScript(tiger_config.serverURL+"/js/tigers.js");
+	});
+}());

@@ -5,7 +5,7 @@ $dir = './sounds';
 if(file_exists($dir)){
 	if(is_writeable($dir)){
 		$files = scandir($dir);
-		$sound_exts = array('wav','mp3','ogg');
+		$sound_exts = array('wav','mp3','ogg','mp4');
 
 		$sounds = array();
 
@@ -28,6 +28,10 @@ if(file_exists($dir)){
 				if(!isset($sound['ogg'])){
 					echo `sox -r44100 $dir/$name.wav $dir/$name.ogg`;
 				}
+
+				//if(!isset($sound['mp4'])){
+				//	echo `sox -r44100 $dir/$name.wav $dir/$name.mp4`;
+				//}
 			}
 		}
 
