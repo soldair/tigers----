@@ -3,7 +3,9 @@ require 'lib/enableGZIP.php';
 require 'lib/getJSFile.php';
 
 $code = getJSFile('js/tigercage.js',true);
-$bookmarklet = 'javascript:'.rawurlencode(trim($code)).";void(0)";
+//$bookmarklet = 'javascript:'.rawurlencode(trim($code)).";void(0)";
+$bookmarklet = 'javascript:'.$code.";void(0)";
+
 ?>
 <!DOCTYPE html>
 <html>
