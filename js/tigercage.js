@@ -10,6 +10,6 @@
 			if(!fs) fs = document.body;
 			if(fs) fs.appendChild(s)
 		}
-	}
+	} else window.tigers.init();
 	return false;
 }())

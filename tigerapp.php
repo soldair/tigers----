@@ -34,6 +34,11 @@ foreach($files as $s){
 //ensure uptodate tigers minified
 getJSFile('js/tigers.js',true);
 
+$custom_key = false;
+if(file_exists('tmp/flikr_key')){
+	$custom_key = file_get_contents('tmp/flikr_key');
+}
+
 ?>
 (function(){
 	<?php
@@ -46,7 +51,9 @@ getJSFile('js/tigers.js',true);
 	tiger_config.sounds = <?php echo json_encode($sounds)?>;
 	tiger_config.serverURL="http://<?php echo $_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])?>";
 	tiger_config.soundServer='tigersounds.php';
-
+	<?php if($custom_key){?>
+	tiger_config.FLIKR_KEY = "<?php echo $custom_key?>";
+	<?php }?>
 	var jqsrc = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js";
 	if(window.jQuery){
 		if(/^1.4/g.test(jQuery.fn.jquery)){//jQuery is 1.4

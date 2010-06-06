@@ -16,9 +16,11 @@ window.tigers = {
 	activeTigers:0,//tigers on the screen
 	totalTigers:0,// total number of tiger expected to load
 	slainTigers:0,//how many tigers you have saved the world from
+	pollInterval:0,
 	soundWorks:0,
 	soundEnabled:0,// user wants sounds
 	sounds:[],// the soulds i should pick from
+	gameNumber:0,
 	server:{
 		url:'',
 		sounds:{},
@@ -26,13 +28,17 @@ window.tigers = {
 	},
 	init:function(){
 		if(window.tiger_config) this.server = window.tiger_config;
-		if(this.server.FLICKER_KEY){
-			this.key = this.server.FLICKER_KEY;
+		if(this.server.FLIKR_KEY){
+			this.key = this.server.FLIKR_KEY;
 		} else {
+			//this is a non comercial key owned by me [Ryan Day aka soldair] on flikr.
+			//set your own in tmp/flikr_key
 			this.key = "70442bef719c380723ebb906dbb70644";
 		}
 
 		var z = this;
+		z.reset();
+		
 		this.get(function(response){
 			if(window.console && window.console.log){
 				console.log(response);
@@ -40,13 +46,20 @@ window.tigers = {
 			
 			z.photos = [];
 			var queue = [];
+			var game = z.gameNumber;
 			var loadPhoto = function(img){
 				if(img) z.photos.push(img);
-				if(!z.frozen){
+				var sameGame = (game == z.gameNumber);
+				if(!z.frozen && sameGame){
 					var next = queue.shift();
 					if(next){
 						$(next.img).attr('src',next.src);
 					}
+				} else if(!sameGame){
+					$.each(queue,function(k,v){
+						v.img = null;//delete refs to these images
+					});
+					queue = [];
 				}
 			}
 			z.totalTigers = response.photos.photo.length;
@@ -64,21 +77,32 @@ window.tigers = {
 		z.slayable();
 		z.activateTigerSounds();
 	},
+	reset:function(){
+		this.photos = [];
+		this.popTime = 1000;
+		this.frozen = 0;
+		this.photos = [];
+		this.activeTigers = 0;
+		this.totalTigers = 0;
+		this.slainTigers = 0;
+		clearInterval(this.pollInterval);
+		this.removeTigers();
+		this.gameNumber++;
+	},
 	get:function(cb){
 		this.apiPhotoSearch('tiger,cat',this.photoTypes.photos_only,cb);
 	},
 	tigerPoll:function(){
 		var lastTiger = 0;
 		var z = this;
-		var interval;
 		var tiger_count = 0;
-		interval = setInterval(function(){
+		z.pollInterval = setInterval(function(){
 			if(z.activeTigers > 10){
-				clearInterval(interval);
+				clearInterval(z.pollInterval);
 				z.gameOver();
 				return;
 			} else if(z.totalTigers == z.slainTigers && z.slainTigers > 0){
-				clearInterval(interval);
+				clearInterval(z.pollInterval);
 				z.victory();
 				return;
 			}
@@ -86,8 +110,8 @@ window.tigers = {
 				var now = z.now();
 				if(now-lastTiger > z.popTime){
 					z.activeTigers++;
-					if(z.activeTigers%10 == 0){
-						z.popTime -=30;//FASTER!!!
+					if(z.totalTigers%10 == 0){
+						z.popTime -=40;//FASTER!!!
 					}
 					lastTiger = now;
 					var tiger = z.photos.shift();
@@ -122,12 +146,14 @@ window.tigers = {
 	},
 	victory:function(){
 		alert("you won! thanks for saving the world from all of those horrible tigers!");
-		this.frozen = 1;
+		this.reset();
 	},
 	gameOver:function(){
-		this.frozen = 1;
-		alert('tigers won!');
-		$(".tiger").die('click');
+		alert('tigers won! click to slay evil tigers.... the tigers may be disguised as ladies, house cats, or buildings');
+		this.removeTigers();
+		this.reset();
+	},
+	removeTigers:function(){
 		$(".tiger").fadeOut('slow',function(){
 			$(this).remove();
 		});

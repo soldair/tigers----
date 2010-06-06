@@ -9,9 +9,55 @@ $bookmarklet = 'javascript:'.rawurlencode(trim($code)).";void(0)";
 <html>
 <head>
 	<title>TIGERS!!!!!!!!!!!</title>
+	<style>
+		body{
+			margin:0;
+			padding:0;
+			background:#000;
+			color:#fff;
+		}
+		#main{
+			width:900px;
+			margin:0px auto;
+		}
+
+		#page{
+			border:3px solid orange;
+			background-color:#fff;
+			color:#000;
+			border-radius:10px;
+			-moz-border-radius:10px;
+			-webkit-border-radius:10px;
+			-khtml-border-radius:10px;
+			-o-border-radius:10px;
+			padding:5px;
+		}
+
+		a,a:visited{
+			color:blue;
+		}
+
+		a:hover{
+			color:green;
+		}
+	</style>
 </head>
 <body>
-	TIGERS!!!!!!!!!!!<br/>
-	<a href="<?php echo $bookmarklet?>">Play Tigers Now!</a>
+	<div id="main">
+		<h1>TIGERS!!!!!!!!!!!</h1>
+
+		<div id="page">
+			<a href="<?php echo $bookmarklet?>">Play Tigers Now!</a>
+			<div style="margin:3px;padding:3px;">
+				you can play tigers on any site when ever you want! just drag the above link to your url bar and click it when you want to save the world from evil tigers!
+			</div>
+			<div>
+				<a href="http://github.com/soldair/tigers----">fork me on github to get your own tigers!</a>
+			</div>
+		</div>
+	</div>
+	<?php
+		if(file_exists("../google_analytics.inc.php")) include("../google_analytics.inc.php");
+	?>
 </body>
 </html>
