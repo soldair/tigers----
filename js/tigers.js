@@ -20,6 +20,7 @@ window.tigers = {
 	soundWorks:0,
 	soundEnabled:0,// user wants sounds
 	sounds:[],// the soulds i should pick from
+	loadedSounds:{},
 	gameNumber:0,
 	server:{
 		url:'',
@@ -38,12 +39,10 @@ window.tigers = {
 
 		var z = this;
 		z.reset();
-		
+		z.loading(true);
 		this.get(function(response){
-			if(window.console && window.console.log){
-				console.log(response);
-			}
-			
+			z.loading(false);
+
 			z.photos = [];
 			var queue = [];
 			var game = z.gameNumber;
@@ -76,6 +75,7 @@ window.tigers = {
 		z.tigerPoll();
 		z.slayable();
 		z.activateTigerSounds();
+		z.activateSoundManager();
 	},
 	reset:function(){
 		this.photos = [];
@@ -88,6 +88,7 @@ window.tigers = {
 		clearInterval(this.pollInterval);
 		this.removeTigers();
 		this.gameNumber++;
+		$(".tiger-sounds").hide();
 	},
 	get:function(cb){
 		this.apiPhotoSearch('tiger,cat',this.photoTypes.photos_only,cb);
@@ -117,10 +118,10 @@ window.tigers = {
 					var tiger = z.photos.shift();
 					
 					var position = z.randomCoordinate(tiger.width,tiger.height);
-					$(tiger).css({position:'absolute',top:position.y+'px',left:position.x+'px'}).appendTo("body").fadeIn('fast');
+					$(tiger).css({position:'absolute',top:position.y+'px',left:position.x+'px',zIndex:5000}).appendTo("body").fadeIn('fast');
 				}
 			}
-		},500);
+		},300);
 	},
 	randomCoordinate:function(pad_x,pad_y){
 		var rand = (+(Math.random()+"").substr(4));
@@ -193,8 +194,14 @@ window.tigers = {
 			} else if(support.wav){
 				type = 'wav';
 			}
-			var sounds = this.server.sounds[type];
+			var sounds = [];
 			if(type && sounds){
+				var z = this;
+				$.each(this.server.sounds[type],function(k,name){
+					var a = document.createElement('audio');
+					a.src = z.server.serverURL+"/sounds/"+name;
+					sounds.push(a);
+				});
 				this.sounds = sounds;
 			}
 		}
@@ -203,9 +210,8 @@ window.tigers = {
 	},
 	playSound:function(){
 		if(this.soundWorks && this.soundEnabled && this.sounds.length){
-			var key = (+(Math.rand()+'').substr(0,4,4))%(sounds.length-1);
-			var a = document.createElement('audio');
-			a.attr('src','')
+			var key = (+(Math.random()+'').substr(4,4))%(this.sounds.length-1);
+			this.sounds[key].play();
 		}
 	},
 	audioSupport:function(){
@@ -217,13 +223,87 @@ window.tigers = {
 			types.ogg = !!(a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
 			types.wav = !!(a.canPlayType('audio/wav; codecs="1"').replace(/no/, ''));
 			types.aac = !!(a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, ''));
+			return types;
 		}
 		return false;
 	},
-	enableSound:function(enable){
+	enableSound:function(enabled){
 		if(window.localStorage){
 			window.localStorage.tigerSounds = enabled?1:0;
 		}
+		this.soundEnabled = enabled?1:0;
+	},
+	activateSoundManager:function(){
+		var z = this;
+		if(!$(".tiger-sounds").length && z.soundWorks){
+			var unmuted = $("<img>").attr('src',z.server.serverURL+"/images/speaker.jpg")
+				.addClass('audio-icon')
+				.addClass('mute').attr('title',"Mute tiger sounds");
+			var muted = $("<img>").attr('src',z.server.serverURL+"/images/muted.jpg")
+				.addClass('audio-icon')
+				.addClass('unmute').attr('title',"Unmute tiger sounds");
+
+			if(this.soundEnabled){
+				$(muted).hide();
+			} else {
+				$(unmuted).hide();
+			}
+
+			$("<div>").css({
+				zIndex:5010,
+				position:'fixed',
+				top:'0px',
+				right:'0px',
+				background:'#000',
+				border:'3px solid orange',
+				"border-radius":'5px',
+				"-moz-border-radius":'5px',
+				"-webkit-border-radius":'5px',
+				"-khtml-border-radius":'5px',
+				"-o-border-radius":'5px',
+				padding:'5px'
+			}).addClass('tiger-sounds').append(unmuted).append(muted).appendTo("body");
+
+			$(".tiger-sounds .mute").live('click',function(){
+				z.enableSound(false);
+				$(".tiger-sounds .mute").hide();
+				$(".tiger-sounds .unmute").show();
+			});
+
+			$(".tiger-sounds .unmute").live('click',function(){
+				z.enableSound(true);
+				$(".tiger-sounds .mute").show();
+				$(".tiger-sounds .unmute").hide();
+			});
+		} else {
+			$(".tiger-sounds").show();
+		}
+	},
+	loading:function(show){
+		if(!$(".tiger-loading").length){
+			//get center of window
+			var h = $(window).height();
+			var w = $(window).width();
+			var loading = $("<div>").addClass('tiger-loading').text("LOADING TIGERS!").css({
+				border:'3px solid #d4d4d4',
+				"font-size":'30px',
+				color:'#d4d4d4',
+				"font-weight":'bold',
+				padding:'5px',
+				position:'fixed',
+				zIndex:5010
+			}).appendTo("body");
+			var l_w = loading.width();
+			var l_h = loading.height();
+			loading.hide();
+			loading.css({top:((h/2)-(l_h/2))+'px',left:((w/2)-(l_w/2))+'px'});
+		}
+		if(show) {
+			$(".tiger-loading").show();
+		} else {
+			$(".tiger-loading").hide();
+		}
+	
 	}
 };
 tigers.init();

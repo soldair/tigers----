@@ -9,13 +9,17 @@ $bookmarklet = 'javascript:'.rawurlencode(trim($code)).";void(0)";
 <html>
 <head>
 	<title>TIGERS!!!!!!!!!!!</title>
+	<link href='http://fonts.googleapis.com/css?family=Crimson+Text' rel='stylesheet' type='text/css'>
 	<style>
 		body{
 			margin:0;
 			padding:0;
 			background:#000;
 			color:#fff;
+			font-size:14px;
+			font-family: 'Crimson Text', arial, serif;
 		}
+
 		#main{
 			width:900px;
 			margin:0px auto;
@@ -40,6 +44,10 @@ $bookmarklet = 'javascript:'.rawurlencode(trim($code)).";void(0)";
 		a:hover{
 			color:green;
 		}
+
+		.play-link{
+			font-size:20px;
+		}
 	</style>
 </head>
 <body>
@@ -47,9 +55,12 @@ $bookmarklet = 'javascript:'.rawurlencode(trim($code)).";void(0)";
 		<h1>TIGERS!!!!!!!!!!!</h1>
 
 		<div id="page">
-			<a href="<?php echo $bookmarklet?>">Play Tigers Now!</a>
+			<a href="<?php echo $bookmarklet?>" class="play-link">Play Tigers Now!</a>
 			<div style="margin:3px;padding:3px;">
-				you can play tigers on any site when ever you want! just drag the above link to your url bar and click it when you want to save the world from evil tigers!
+				you can play tigers on any site when ever you want!<br/>just <u>drag</u> the above link to your <u>bookmark bar</u> and click it when you want to save the world from <span style="color:red">evil</span> tigers!
+				<div>
+					this game is a <b>BOOKMARKLET!</b> playing it will not change your current domain and you can use it on <b>ANY DOMAIN</b> if you click the bookmark.
+				</div>
 			</div>
 			<div>
 				<a href="http://github.com/soldair/tigers----">fork me on github to get your own tigers!</a>

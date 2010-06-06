@@ -27,7 +27,7 @@ foreach($files as $s){
 	$sound = $parts[0];
 	if(in_array($ext,$sound_exts)){
 		if(!isset($sounds[$ext])) $sounds[$ext] = array();
-		$sounds[$ext] = $sound;
+		$sounds[$ext][] = $sound.'.'.$ext;
 	}
 }
 
