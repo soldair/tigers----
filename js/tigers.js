@@ -65,7 +65,7 @@ window.tigers = {
 			$.each(response.photos.photo,function(k,photo){
 				var img = $("<img/>").bind('load',function(){
 					loadPhoto(this);
-				}).css({display:'none'}).addClass('tiger')[0];
+				}).css({display:'none',cursor:'pointer'}).addClass('tiger')[0];
 				
 				queue.push({img:img,src:z.photoToURL(photo)});
 				loadPhoto();
@@ -139,9 +139,10 @@ window.tigers = {
 				z.playSound();
 				z.activeTigers--;
 				z.slainTigers++;
-				$(this).fadeOut('fast',function(){
-					$(this).remove();
-				});
+				$(this).remove();
+				//fadeOut('fast',function(){
+				//	$(this).remove();
+				//});
 			}
 		});
 	},
