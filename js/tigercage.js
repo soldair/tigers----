@@ -2,12 +2,12 @@
 	if(!window.tigers){
 		try{
 			var s=document.createElement('script');
-			s.src=location.protocol+'//'+location.hostname+location.pathname+'tigerapp.php';
+			s.src='{SERVER_URL}/tigerapp.php';
 			fs = document.getElementsByTagName('head')[0];
 			if(!fs) fs = document.body;
 			if(fs) fs.appendChild(s);
 		}catch(e){
-			alert(e.message);
+			alert('tigers failed to load =(');
 		}
 	} else window.tigers.init();
 	return false;

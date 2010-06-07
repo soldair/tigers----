@@ -112,7 +112,7 @@ window.tigers = {
 				if(now-lastTiger > z.popTime){
 					z.activeTigers++;
 					if(z.totalTigers%10 == 0){
-						z.popTime -=35;//FASTER!!!
+						z.popTime -=30;//FASTER!!!
 					}
 					lastTiger = now;
 					var tiger = z.photos.shift();

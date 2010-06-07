@@ -3,8 +3,9 @@ require 'lib/enableGZIP.php';
 require 'lib/getJSFile.php';
 
 $code = getJSFile('js/tigercage.js',true);
-//$bookmarklet = 'javascript:'.rawurlencode(trim($code)).";void(0)";
-$bookmarklet = 'javascript:'.$code.";void(0)";
+
+$clean_code = trim(json_encode(array($code)),'[]');
+
 
 ?>
 <!DOCTYPE html>
@@ -57,7 +58,10 @@ $bookmarklet = 'javascript:'.$code.";void(0)";
 		<h1>TIGERS!!!!!!!!!!!</h1>
 
 		<div id="page">
-			<a href="<?php echo $bookmarklet?>" class="play-link">Play Tigers Now!</a>
+			<a href="javascript://" class="play-link">Play Tigers Now!</a>
+			<script>
+				
+			</script>
 			<div style="margin:3px;padding:3px;">
 				you can play tigers on any site when ever you want!<br/>just <u>drag</u> the above link to your <u>bookmark bar</u> and click it when you want to save the world from <span style="color:red">evil</span> tigers!
 				<div>
@@ -69,6 +73,25 @@ $bookmarklet = 'javascript:'.$code.";void(0)";
 			</div>
 		</div>
 	</div>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script>
+	$(function(){
+		var code = <?=$clean_code?>;
+
+		//clean filename chunk if its there
+		var path = location.pathname;
+		var path_chunks = path.split('/');
+		if(path_chunks[path_chunks.length-1].indexOf('.') !== -1){
+			path_chunks.pop();
+			path = path_chunks.join('/');
+		}
+		//trim trailing slashes for cleanliness
+		path = path.replace(/^\/+|\/+$/g,'');
+		var url = location.protocol+'//'+location.host+'/'+path;
+		code = code.replace("{SERVER_URL}",url);
+		$(".play-link").attr('href','javascript:'+encodeURIComponent(code+';void(0);'));
+	})
+	</script>
 	<?php
 		if(file_exists("../google_analytics.inc.php")) include("../google_analytics.inc.php");
 	?>
