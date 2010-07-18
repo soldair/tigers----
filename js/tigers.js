@@ -72,6 +72,7 @@ window.tigers = {
 			});
 		});
 		
+		z.start()
 		z.tigerPoll();
 		z.slayable();
 		z.activateTigerSounds();
@@ -89,6 +90,7 @@ window.tigers = {
 		this.removeTigers();
 		this.gameNumber++;
 		$(".tiger-sounds").hide();
+		$("#tiger_overlay").remove();
 	},
 	get:function(cb){
 		this.apiPhotoSearch('tiger,cat',this.photoTypes.photos_only,cb);
@@ -118,7 +120,7 @@ window.tigers = {
 					var tiger = z.photos.shift();
 					
 					var position = z.randomCoordinate(tiger.width,tiger.height);
-					$(tiger).css({position:'absolute',top:position.y+'px',left:position.x+'px',zIndex:5000}).appendTo("body").fadeIn('fast');
+					$(tiger).css({position:'absolute',top:position.y+'px',left:position.x+'px',zIndex:5011}).appendTo("body").fadeIn('fast');
 				}
 			}
 		},400);
@@ -145,6 +147,18 @@ window.tigers = {
 				//});
 			}
 		});
+	},
+	start:function(){
+		//make overlay on host site to prevent link clicks
+		$("<div>").css({
+			zIndex:5009,
+			position:'absolute',
+			top:0,
+			left:0,
+			width:$(document).width(),
+			height:$(document).height(),
+			background:'transparent'
+		}).attr('id',"tiger_overlay").appendTo("body");
 	},
 	victory:function(){
 		alert("you won! thanks for saving the world from all of those horrible tigers!");
@@ -264,7 +278,7 @@ window.tigers = {
 				"-o-border-radius":'5px',
 				padding:'5px'
 			}).addClass('tiger-sounds').append(unmuted).append(muted).appendTo("body");
-
+			
 			$(".tiger-sounds .mute").live('click',function(){
 				z.enableSound(false);
 				$(".tiger-sounds .mute").hide();
@@ -310,7 +324,14 @@ window.tigers = {
 		} else {
 			$(".tiger-loading").hide();
 		}
-	
+	},
+	armory:{
+		init:function(){
+		
+		},
+		darkPlasma:function(){
+			return $("img").attr('src',z.server.serverURL+"/images/tigergun.jpg");
+		}
 	}
 };
 tigers.init();
