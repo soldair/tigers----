@@ -91,9 +91,10 @@ window.tigers = {
 		this.gameNumber++;
 		$(".tiger-sounds").hide();
 		$("#tiger_overlay").remove();
+		this.armory.createGun(false);
 	},
 	get:function(cb){
-		this.apiPhotoSearch('tiger,cat',this.photoTypes.photos_only,cb);
+		this.apiPhotoSearch('cat,tiger',this.photoTypes.photos_only,cb);
 	},
 	tigerPoll:function(){
 		var lastTiger = 0;
@@ -159,6 +160,7 @@ window.tigers = {
 			height:$(document).height(),
 			background:'transparent'
 		}).attr('id',"tiger_overlay").appendTo("body");
+		//this.armory.init();
 	},
 	victory:function(){
 		alert("you won! thanks for saving the world from all of those horrible tigers!");
@@ -327,10 +329,46 @@ window.tigers = {
 	},
 	armory:{
 		init:function(){
-		
+			this.followMouse();
+			this.createGun('darkPlasma');
 		},
-		darkPlasma:function(){
-			return $("img").attr('src',z.server.serverURL+"/images/tigergun.jpg");
+		mouseX:0,
+		currentGun:false,
+		followMouse:function(){
+			var z = this;
+			z.mouseX = $(window).width()/2;
+			$("body").mousemove(function(ev){
+				z.mouseX = ev.clientX;
+				z.placeGun();
+			});
+		},
+		createGun:function(name){
+			if(this.currentGun){
+				$(this.currentGun).remove();
+				this.currentGun = false;
+			}
+			if(this.guns[name]){
+				this.currentGun = $(this.guns[name]()).appendTo("body")
+							.css({position:'fixed',bottom:'0px',zIndex:'5008'})[0]; 
+			}
+		},
+		placeGun:function(){
+			if(this.currentGun){
+				var w = $(this.currentGun).width()/2;
+				var x = this.mouseX;
+				if(x < 0) {
+					x = 0;
+				} else if((x+w) > $(window).width()){
+					x = $(window).width();
+				}
+				
+				$(this.currentGun).css({left:x+'px'});
+			}
+		},
+		guns:{
+			darkPlasma:function(){
+				return $("<img>").attr('src',window.tigers.server.serverURL+"/images/tigergun.png")[0];
+			}
 		}
 	}
 };
